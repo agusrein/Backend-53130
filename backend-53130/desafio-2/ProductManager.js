@@ -11,6 +11,9 @@ class ProductManager {
     async addProduct(title, description, price, thumbnail, code, stock) {
         const product = { title, description, price, thumbnail, code, stock };
 
+        const data = await fs.promises.readFile(this.path,"utf-8");
+        if(data){this.products = JSON.parse(data)};
+
             if (this.products.find(e => e.code === product.code)) {
                 console.log(`ERROR el producto con el codigo ${product.code}, ya existe.`)
                 return;
@@ -19,6 +22,7 @@ class ProductManager {
                 console.log('ERROR debe llenar todos los datos para ingresar un artículo');
                 return;
             }
+
             else this.products.push({ ...product, id: ++ProductManager.id });
     
             await fs.promises.writeFile(this.path, JSON.stringify(this.products, null, 2));
@@ -47,21 +51,23 @@ class ProductManager {
         }
     }
 
-    async updateProduct(id, { property: value }) {
+
+    async updateProduct(id, { property, value }) {
         try {
-            const data = await fs.promises.readFile(this.path, 'uft-8');
+            const data = await fs.promises.readFile(this.path, 'utf-8');
             this.products = JSON.parse(data)
             const i = this.products.findIndex(e => e.id === id);
 
             //Corroboro que la propiedad que se pasa como parámetro se encuentre y no se me agregue al objeto como una nueva
 
             const existingProperty = this.products.some(e => e.hasOwnProperty(property));
+            
+            
+            // Si existe el indice del id pasado como parámetro, y la propiedad tambien existe y es distinta a id para ésta no se modifique, entonces proceder.
 
-            // Si existe el indice del id pasado como parámetro y la propiedad pasada es distinta a id para que no se modifique, entonces modificarlo.
-
-            if (i && (existingProperty != id)) {
-                this.products[i] = { ...this.products[i], property: value }
-                await fs.promises.writeFile(this.path, JSON.stringify(this.products));
+            if (i >= 0 && existingProperty && property != id) {
+                this.products[i] = { ...this.products[i], [property]: value }
+                await fs.promises.writeFile(this.path, JSON.stringify(this.products, null, 2));
                 console.log(`La propiedad ${property} del producto ${id} se ha modificado correctamente.`)
             }
             else { console.log(`ERROR Not Found : ${id}`) }
@@ -73,28 +79,28 @@ class ProductManager {
     }
 
 
-    // async deleteProduct(id) {
-    //     try {
-    //         const data = await fs.promises.readFile(this.path, 'uft-8');
-    //         this.products = JSON.parse(data)
-    //         const productFound = this.products.find(e => e.id === id);
-    //         if (productFound) {
-    //             this.products = this.products.filter(object => object !== productFound); //Filtro el array para descartar el producto a eliminar.
-    //             console.log(`El producto ${id} se ha eliminado.`)
-    //             return await fs.promises.writeFile(this.path, JSON.stringify(this.products)) // Piso el antiguo documento y guardo el nuevo array sin el elemento eliminado.
-    //         }
-    //         else { console.log(`ERROR Not Found : ${id}`) }
-    //     }
-    //     catch {
-    //         return 'ERROR no se ha podido leer el archivo'
-    //     }
-    // }
+    async deleteProduct(id) {
+        try {
+            const data = await fs.promises.readFile(this.path, 'utf-8');
+            this.products = JSON.parse(data)
+            const productFound = this.products.find(e => e.id === id);
+            if (productFound) {
+                this.products = this.products.filter(object => object !== productFound); //Filtro el array para descartar el producto a eliminar.
+                console.log(`El producto ${id} se ha eliminado.`)
+                return await fs.promises.writeFile(this.path, JSON.stringify(this.products)) // Piso el antiguo documento y guardo el nuevo array sin el elemento eliminado.
+            }
+            else { console.log(`ERROR Not Found : ${id}`) }
+        }
+        catch {
+            (error => console.log(error))
+        }
+    }
 }
 
 //TESTING
 
 //1)
-const products = new ProductManager('./products.json');
+// const products = new ProductManager('./products.json');
 
 // //2)
 // console.log(products.getProducts());
@@ -112,4 +118,8 @@ const products = new ProductManager('./products.json');
 // products.getProductById(5);
 
 //6)
-products.updateProduct(1,{code:'1234'});
+// products.updateProduct(2,{property:'code',value:'codigocambiado'});
+
+//7)
+// products.deleteProduct(2);
+// products.deleteProduct(5);
