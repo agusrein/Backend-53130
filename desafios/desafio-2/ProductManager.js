@@ -20,7 +20,7 @@ class ProductManager {
     async addProduct(title, description, price, thumbnail, code, stock) {
         const product = { title, description, price, thumbnail, code, stock };
 
-        this.readFile();
+        // this.readFile();
 
         if (this.products.find(e => e.code === product.code)) {
             console.log(`ERROR el producto con el codigo ${product.code}, ya existe.`)
@@ -103,15 +103,23 @@ class ProductManager {
 //TESTING
 
 //1)
-// const products = new ProductManager('./products.json');
+const products = new ProductManager('./products.json');
 
 // //2)
 // console.log(products.getProducts());
 
 // // //3)
-// products.addProduct('producto prueba', 'Este es un producto prueba',200, 'sin imagen', 'abc123',25);
-// products.addProduct('producto prueba', 'Este es un producto prueba',200, 'sin imagen', 'abc234',25);
-// products.addProduct('producto prueba', 'Este es un producto prueba',200, 'abc123',25);
+// products.addProduct('Pizza Napolitana', 'Este es un producto prueba',9100, 'sin imagen', '001',25);
+// products.addProduct('Hamburguesa Completa', 'Este es un producto prueba',8100, 'sin imagen', '002',25);
+// products.addProduct('Hamburguesa Americana', 'Este es un producto prueba',8600, 'sin imagen', '003',25);
+// products.addProduct('Rabas', 'Este es un producto prueba',9800, 'sin imagen', '004',25);
+// products.addProduct('Sandwich de Ternera', 'Este es un producto prueba',10800, 'sin imagen', '005',25);
+// products.addProduct('Ñoquis de Ricota', 'Este es un producto prueba',7450, 'sin imagen', '006',25);
+// products.addProduct('Milanesa Completa', 'Este es un producto prueba',9500, 'sin imagen', '007',25);
+// products.addProduct('Pizza Muzzarella', 'Este es un producto prueba',8000, 'sin imagen', '009',25);
+// products.addProduct('Papas Fritas', 'Este es un producto prueba',4500, 'sin imagen', '008',25);
+// products.addProduct('Ensalada de Atun', 'Este es un producto prueba',5900, 'sin imagen', '010',25);
+
 
 // // // // //4)
 // console.log(products.getProducts());

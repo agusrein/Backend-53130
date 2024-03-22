@@ -1,0 +1,92 @@
+[
+  {
+    "title": "Pizza Napolitana",
+    "description": "Este es un producto prueba",
+    "price": 9100,
+    "thumbnail": "sin imagen",
+    "code": "001",
+    "stock": 25,
+    "id": 1
+  },
+  {
+    "title": "Hamburguesa Completa",
+    "description": "Este es un producto prueba",
+    "price": 8100,
+    "thumbnail": "sin imagen",
+    "code": "002",
+    "stock": 25,
+    "id": 2
+  },
+  {
+    "title": "Hamburguesa Americana",
+    "description": "Este es un producto prueba",
+    "price": 8600,
+    "thumbnail": "sin imagen",
+    "code": "003",
+    "stock": 25,
+    "id": 3
+  },
+  {
+    "title": "Rabas",
+    "description": "Este es un producto prueba",
+    "price": 9800,
+    "thumbnail": "sin imagen",
+    "code": "004",
+    "stock": 25,
+    "id": 4
+  },
+  {
+    "title": "Sandwich de Ternera",
+    "description": "Este es un producto prueba",
+    "price": 10800,
+    "thumbnail": "sin imagen",
+    "code": "005",
+    "stock": 25,
+    "id": 5
+  },
+  {
+    "title": "Ñoquis de Ricota",
+    "description": "Este es un producto prueba",
+    "price": 7450,
+    "thumbnail": "sin imagen",
+    "code": "006",
+    "stock": 25,
+    "id": 6
+  },
+  {
+    "title": "Milanesa Completa",
+    "description": "Este es un producto prueba",
+    "price": 9500,
+    "thumbnail": "sin imagen",
+    "code": "007",
+    "stock": 25,
+    "id": 7
+  },
+  {
+    "title": "Pizza Muzzarella",
+    "description": "Este es un producto prueba",
+    "price": 8000,
+    "thumbnail": "sin imagen",
+    "code": "008",
+    "stock": 25,
+    "id": 8
+  },
+  {
+    "title": "Papas Fritas",
+    "description": "Este es un producto prueba",
+    "price": 4500,
+    "thumbnail": "sin imagen",
+    "code": "009",
+    "stock": 25,
+    "id": 9
+  },
+  {
+    "title": "Ensalada de Atun",
+    "description": "Este es un producto prueba",
+    "price": 5900,
+    "thumbnail": "sin imagen",
+    "code": "010",
+    "stock": 25,
+    "id": 10
+  }
+]
