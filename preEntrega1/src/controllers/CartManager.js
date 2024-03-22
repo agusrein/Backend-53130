@@ -1,29 +1,30 @@
 const fs = require('fs');
 
+
 class CartManager {
-    static id = 0;
+
     constructor(path) {
         this.path = path;
-        this.products = [];
         this.carts = [];
+        this.id = 0;
         this.readFile();
     }
-
-    readFile() {
+    readFile(){
         const data = fs.readFileSync(this.path, "utf-8");
-        if (data) {
-            console.log('SE LEYÓ');
+        if(data){
             this.carts = JSON.parse(data);
-            CartManager.id = this.carts[this.carts.length - 1].id;
-        };
-        return this.carts;
+            if(this.carts.length>0){
+                this.id = this.carts[this.carts.length -1].id
+            }
+        }
+        return this.carts
+        
     }
 
     async createCart() {
-        const newCart = { ...this.products, id: ++CartManager.id }
+        const newCart = { products: [], id: ++this.id}
         this.carts.push(newCart);
-        await fs.promises.writeFile((this.path, JSON.stringify(this.carts, null, 2)));
-        await this.readFile();
+        await fs.promises.writeFile(this.path, JSON.stringify(this.carts, null, 2));
         return newCart;
     }
 
@@ -38,17 +39,18 @@ class CartManager {
         }
     }
 
-    async addProductToCart(id, product, quantity) {
+    async addProductToCart(id, productId, quantity) {
         const cartFound = this.carts.find(e => e.id == id);
-        if(cartFound){
-            const existingProduct = cartFound.this.products.find(e=>e.id == product);
-            existingProduct? existingProduct.quantity +=quantity : cartFound.this.products.push({id:product,quantity});
+        if (cartFound) {
+            const existingProduct = cartFound.products.find(e => e.id == productId);
+            existingProduct ? existingProduct.quantity += quantity : cartFound.products.push({ id: productId, quantity: quantity });
+
         }
-        else{
+        else {
             throw new Error(`ERROR Not Found : ${id}`);
         }
-        await fs.promises.writeFile((this.path, JSON.stringify(this.carts, null, 2)));
-        await this.readFile();
+        await fs.promises.writeFile(this.path, JSON.stringify(this.carts, null, 2));
+
     }
 
 }
