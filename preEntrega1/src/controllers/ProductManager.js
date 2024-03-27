@@ -10,46 +10,56 @@ class ProductManager {
     }
 
     readFile() {
-            const data =  fs.readFileSync(this.path, "utf-8");
-            if (data) {
-                this.products = JSON.parse(data);
-                ProductManager.id = this.products[this.products.length - 1].id;
-            };
-            return this.products;
+        const data = fs.readFileSync(this.path, "utf-8");
+        if (data) {
+            this.products = JSON.parse(data);
+            ProductManager.id = this.products[this.products.length - 1].id;
+        };
+        return this.products;
     }
 
     async addProduct(title, description, price, thumbnail = [], code, stock, status = true, category) {
         const product = { title, description, price, thumbnail, code, stock, status, category };
-    
-        // this.getProducts();
-    
-        if (this.products.find(e => e.code === product.code)) {
-            throw new Error(`El producto con el código ${product.code} ya existe.`);
-        } else if (!product.title || !product.description || !product.price || !product.status || !product.stock || !product.category) {
-            throw new Error('Debe llenar todos los datos para ingresar un artículo');
-        } else {
-            this.products.push({ ...product, id: ++ProductManager.id });
-            await fs.promises.writeFile(this.path, JSON.stringify(this.products, null, 2));
-            await this.readFile();
+        try {
+            if (this.products.find(e => e.code === product.code)) {
+                return { status: false, message: `El producto con el código ${product.code} ya existe.` }
+            } else if (!product.title || !product.description || !product.price || !product.status || !product.stock || !product.category) {
+                return { status: false, message: 'Debe llenar todos los datos para ingresar un artículo' }
+            } else {
+                this.products.push({ ...product, id: ++ProductManager.id });
+                await fs.promises.writeFile(this.path, JSON.stringify(this.products, null, 2));
+                await this.readFile();
+                return { status: true, message: 'PRODUCTO AGREGADO EXITOSAMENTE' };
+            }
+        } catch (error) {
+            return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` }
         }
     }
 
 
 
     getProducts() {
-        return this.products;
+        if (this.products) {
+            return { status: true, products: this.products }
+        }
+        return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` }
     }
 
 
 
     getProductById(id) {
+        try {
             const productFound = this.products.find(e => e.id === id);
-            if(productFound){
-                console.log(`Producto ${id} encontrado :`)
-                return productFound;
+            if (productFound) {
+                return { status: true, message: `Producto ${id} encontrado :`, product: productFound };
             }
-            throw new Error(`ERROR Not Found : ${id}`)
-
+            else {
+                return { status: false, message: `Product Not Found : (${id})` }
+            }
+        }
+        catch {
+            return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` }
+        }
     }
 
 
@@ -68,12 +78,14 @@ class ProductManager {
                 this.products[i] = { ...this.products[i], [property]: value }
                 await fs.promises.writeFile(this.path, JSON.stringify(this.products, null, 2));
                 await this.readFile();
-                console.log(`La propiedad ${property} del producto ${id} se ha modificado correctamente.`)
+                return { status: true, message: `La propiedad ${property} del producto ${id} se ha modificado correctamente.` }
             }
-            else { throw new Error(`Product Not Found (${id})`)}
+            else {
+                return { status: false, message: `Product Not Found : (${id})` }
+            }
         }
         catch (error) {
-             throw new Error(error);
+            return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` }
         }
 
     }
@@ -84,16 +96,14 @@ class ProductManager {
             const productFound = this.products.find(e => e.id === id);
             if (productFound) {
                 this.products = this.products.filter(object => object !== productFound); //Filtro el array para descartar el producto a eliminar.
-                console.log(`El producto ${id} se ha eliminado.`)
                 await fs.promises.writeFile(this.path, JSON.stringify(this.products, null, 2)) // Piso el antiguo documento y guardo el nuevo array sin el elemento eliminado.
-                await this.readFile(); 
-                return;
+                await this.readFile();
+                return { status: true, message: `El producto ${id} se ha eliminado.` };
             }
-            else { throw new Error(`Product Not Found : (${id})`)}
-            
+            else { return { status: false, message: `Product Not Found : (${id})` } }
         }
         catch (error) {
-            throw new Error(error);
+            return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` }
         }
     }
 }

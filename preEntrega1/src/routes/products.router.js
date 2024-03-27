@@ -9,64 +9,60 @@ router.get('/products', async (request, response) => {
         const products = await productsManager.getProducts();
         let limit = parseInt(request.query.limit);
         if (limit >= 1) {
-            let newProducts = products.slice(0, limit);
-            return response.send(newProducts);
+            let newProducts = products.products.slice(0, limit);
+            return response.status(200).send({ products: newProducts });
         }
 
-        return response.status(200).send(products);
+        return response.status(200).send({ products: products.products });
     }
-    catch (error){
-            response.status(500).send({ message: `FILE NOT FOUND ${error}` })
+    catch (error) {
+        response.status(500).send({ message: error.message });
     }
 
 });
 
 router.get('/products/:pid', async (request, response) => {
     try {
-        const products = await productsManager.getProducts();
         let id = parseInt(request.params.pid);
-        let newProduct = products.find(e => e.id === id)
-        if (newProduct) {
-            return response.status(200).send(newProduct)
-        }
-        return response.status(404).send(`ERROR PRODUCT (${id}) NOT FOUND`);
+        let product = await productsManager.getProductById(id);
+        product.status ? response.status(200).send({ message: product.message, product: product.product }) : response.status(404).send({ message: product.message })
+
     }
     catch {
-        (error => {
-            response.status(500).send({ message: `FILE NOT FOUND ${error}` })
-        })
+        response.status(500).send({ message: error.message });
     }
 });
 
 router.post('/products', async (request, response) => {
     const { title, description, price, thumbnail, code, stock, status, category } = request.body;
     try {
-        await productsManager.addProduct(title, description, price, thumbnail, code, stock, status, category);
-        response.status(200).send({ message: `SUCCESS PRODUCTO AGREGADO` })
+        const result = await productsManager.addProduct(title, description, price, thumbnail, code, stock, status, category);
+        result.status ? response.status(200).send({ message: result.message }) : response.status(404).send({ message: result.message })
     } catch (error) {
-        response.status(500).send({ message: `ERROR AL AGREGAR EL ARTICULO: ${error.message}` });
+        response.status(500).send({ message: `ARTICULO NO AGREGADO: ${error.message}` });
     }
 
 })
 
-router.put('/products/:pid', async (request,response)=>{
-let id = parseInt(request.params.pid);
-const {property,value} = request.body;
-try {
-    await productsManager.updateProduct(id,{property,value});
-    response.status(200).send({message: 'PRODUCTO ACTUALIZADO'});
-} catch (error) {
-    response.status(404).send({message: `ERROR AL ACTUALIZAR EL PRODUCTO: ${error}`});
-}
+router.put('/products/:pid', async (request, response) => {
+    let id = parseInt(request.params.pid);
+    const { property, value } = request.body;
+    try {
+        const result = await productsManager.updateProduct(id, { property, value });
+        result.status ? response.status(200).send({ message: result.message }) : response.status(404).send({ message: result.message })
+    } catch (error) {
+        response.status(500).send({ message: `ERROR AL ACTUALIZAR EL PRODUCTO: ${error.message}` });
+    }
 })
 
-router.delete('/products/:pid', async (request,response)=>{
+router.delete('/products/:pid', async (request, response) => {
     let id = parseInt(request.params.pid)
     try {
-        await productsManager.deleteProduct(id);
-        response.status(200).send({message:'PRODUCTO ELIMINADO CORRECTAMENTE'})
+        const result = await productsManager.deleteProduct(id);
+        result.status ? response.status(200).send({ message: result.message }) : response.status(404).send({ message: result.message })
+
     } catch (error) {
-        response.status(404).send({message:`ERROR AL ELIMINAR EL PRODUCTO: ${error}`})
+        response.status(500).send({ message: `ERROR AL ELIMINAR EL PRODUCTO: ${error.message}` })
     }
 })
 
