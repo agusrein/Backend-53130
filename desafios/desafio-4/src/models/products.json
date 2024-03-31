@@ -1,4 +1,26 @@
-[
+[ 
+  {
+    "title": "Pizza Napolitana",
+    "description": "Este es un producto prueba",
+    "price": 9100,
+    "thumbnail": "sin imagen",
+    "code": "001",
+    "stock": 25,
+    "status": true,
+    "category": "1",
+    "id": 1
+  },
+  {
+    "title": "Hamburguesa Completa",
+    "description": "Este es un producto prueba",
+    "price": 11000,
+    "thumbnail": "sin imagen",
+    "code": "002",
+    "stock": 25,
+    "status": true,
+    "category": "2",
+    "id": 2
+  },
   {
     "title": "Hamburguesa Americana",
     "description": "Este es un producto prueba",

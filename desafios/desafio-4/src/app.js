@@ -46,16 +46,16 @@ io.on('connection',async (socket)=>{
         await productManager.deleteProduct(id);
         socket.emit("products", await productManager.getProducts());
     })
-    socket.on("addProduct", async (productData) =>{
+    socket.on("addProduct", async (product) =>{
         const result = await productManager.addProduct(
-            productData.title,
-            productData.description,
-            productData.price,
-            [productData.img], 
-            productData.code,
-            productData.stock,
-            productData.status,
-            productData.category
+            product.title,
+            product.description,
+            product.price,
+            product.thumbnail, 
+            product.code,
+            product.stock,
+            product.status,
+            product.category
         );
         if (result.status) {
             console.log(result.message); 
