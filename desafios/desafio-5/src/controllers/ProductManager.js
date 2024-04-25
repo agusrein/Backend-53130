@@ -9,7 +9,7 @@ class ProductManager {
             if (existingProduct) {
                 return { status: false, message: `El producto con el código ${product.code} ya existe.` }
 
-            } else if (!product.title || !product.description || !product.price || !product.status || !product.stock || !product.category) {
+            } else if (!product.title || !product.description || !product.price ||  !product.stock || !product.category) {
                 return { status: false, message: 'Debe llenar todos los datos para ingresar un artículo' }
 
             } else {
@@ -27,7 +27,6 @@ class ProductManager {
     async getProducts() {
         try {
             const products = await ProductModel.find();
-            console.log(products)
             return { status: true, products: products };
         } catch (error) {
             return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` };
@@ -56,10 +55,9 @@ class ProductManager {
     async updateProduct(id, { property, value }) {
         try {
             const product = await ProductModel.findOne({ _id: id });
-
             if (product) {
                 //Corroboro que la propiedad que se pasa como parámetro se encuentre y no se me agregue al objeto como una nueva
-                if (product.hasOwnProperty(property)) {
+                if (property in product) {
                     product[property] = value;
                     await product.save();
                     return { status: true, message: `La propiedad ${property} del producto ${id} se ha modificado correctamente.` };

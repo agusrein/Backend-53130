@@ -7,7 +7,7 @@ class CartManager {
         try {
             const newCart = new CartModel({products: []});
             await newCart.save();
-            return { status: true, message: `Carrito Creado` }
+            return { status: true, message: `Carrito Creado`, cart: newCart }
 
         } catch (error) {
             return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` }
@@ -31,8 +31,8 @@ class CartManager {
         try {
             const cartFound = await CartModel.findById(id);
             if (cartFound) {
-                const existingProduct = cartFound.products.find(e => e.id == productId);
-                existingProduct ? existingProduct.quantity += quantity : cartFound.products.push({ id: productId, quantity: quantity });
+                const existingProduct = cartFound.products.find(e => e.product.toString() == productId);
+                existingProduct ? existingProduct.quantity += quantity : cartFound.products.push({ product: productId, quantity});
                 cartFound.markModified("products");
                 await cartFound.save();
                 return { status: true, message: 'Producto Agregado' }

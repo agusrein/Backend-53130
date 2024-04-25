@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const messagesSchema = new mongoose.Schema({
     user: {
-        tyoe: String,
+        type: String,
         required: true
     },
     message: {
@@ -11,5 +11,5 @@ const messagesSchema = new mongoose.Schema({
     }
 });
 
-const messagesModel = mongoose.model("Messages", messagesSchema);
+const messagesModel = mongoose.model("messages", messagesSchema);
 module.exports = messagesModel;

@@ -34,9 +34,9 @@ router.get('/products/:pid', async (request, response) => {
 });
 
 router.post('/products', async (request, response) => {
-    const { title, description, price, thumbnail, code, stock, status, category } = request.body;
+    const { title, description, price, thumbnail, code, stock, status, img, category } = request.body;
     try {
-       const result = await productsManager.addProduct(title, description, price, thumbnail, code, stock, status, category);
+       const result = await productsManager.addProduct(title, description, price, thumbnail, code, stock, status,img , category);
         result.status ? response.status(200).send({ message: result.message }) : response.status(404).send({message: result.message})
     } catch (error) {
         response.status(500).send({ message: `ARTICULO NO AGREGADO: ${error.message}` });
@@ -45,7 +45,7 @@ router.post('/products', async (request, response) => {
 })
 
 router.put('/products/:pid', async (request, response) => {
-    let id = parseInt(request.params.pid);
+    let id = request.params.pid;
     const { property, value } = request.body;
     try {
        const result = await productsManager.updateProduct(id, { property, value });
@@ -56,7 +56,7 @@ router.put('/products/:pid', async (request, response) => {
 })
 
 router.delete('/products/:pid', async (request, response) => {
-    let id = parseInt(request.params.pid)
+    let id = request.params.pid;
     try {
         const result = await productsManager.deleteProduct(id);
         result.status ? response.status(200).send({ message: result.message }) : response.status(404).send({message: result.message})
