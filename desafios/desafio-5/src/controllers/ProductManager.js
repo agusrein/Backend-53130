@@ -26,7 +26,7 @@ class ProductManager {
 
     async getProducts() {
         try {
-            const products = await ProductModel.find();
+            const products = await ProductModel.find().lean();
             return { status: true, products: products };
         } catch (error) {
             return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` };

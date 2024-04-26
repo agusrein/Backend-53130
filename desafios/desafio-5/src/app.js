@@ -7,6 +7,8 @@ const PUERTO = 8080;
 const exphbs = require('express-handlebars');
 const socket = require('socket.io');
 require('./database.js')
+const ProductManager = require('./controllers/ProductManager');
+const productManager = new ProductManager()
 
 
 
@@ -49,6 +51,32 @@ io.on("connection", (socket) =>{
     })
 })
 
+io.on('connection',async (socket)=>{
+    socket.emit("products", await productManager.getProducts());
+    socket.on("deleteProduct" , async (id) =>{
+        await productManager.deleteProduct(id);
+        socket.emit("products", await productManager.getProducts());
+    })
+    socket.on("addProduct", async (product) =>{
+        const result = await productManager.addProduct(
+            product.title,
+            product.description,
+            product.price,
+            product.thumbnail, 
+            product.code,
+            product.stock,
+            product.status,
+            product.img,
+            product.category
+        );
+        if (result.status) {
+            console.log(result.message); 
+            socket.emit('products', await productManager.getProducts());
+        } else {
+            console.error(result.message); 
+        }
+    })
+})
 
 
 

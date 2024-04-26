@@ -3,8 +3,8 @@ const ProductManager = require('../controllers/ProductManager');
 const express = require('express');
 const router = express.Router();
 
-const productManager = new ProductManager('./src/models/products.json')
-const cartManager = new CartManager('./src/models/cart.json');
+const productManager = new ProductManager()
+const cartManager = new CartManager();
 
 router.post('/carts', async (request, response) => {
     try {
