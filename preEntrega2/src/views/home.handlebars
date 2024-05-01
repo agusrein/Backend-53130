@@ -19,12 +19,16 @@
   {{/each}}
 </div>
 
-<div class="d-flex col-10 justify-content-center">
+<div class="d-flex col-12 justify-content-center mt-3 mb-3">
+  
   {{#if hasPrevPage}}
-  <a href="/products?page={{prevPage}}">Anterior</a>
+  <a class="col-2 text-center" href="{{prevLink}}">Anterior</a>
   {{/if}}
+  <p class="col-2 text-center">Pagina {{currentPage}} de {{totalPages}}</p>
   {{#if hasNextPage}}
-  <a href="/products?page={{nextPage}}">Siguiente</a>
+  <a class="col-2 text-center" href="{{nextLink}}">Siguiente</a>
   {{/if}}
-  <p>Pagina {{currentPage}} de {{totalPages}}</p>
+  
+ 
+  
 </div>

@@ -9,25 +9,23 @@ router.get('/products', async (request, response) => {
     try {
         let page = parseInt(request.query.page) || 1;
         let limit = parseInt(request.query.limit) || 10;
-        let query = parseInt(request.query.category) || 0;
+        let query = request.query.category || null;
         let sort = parseInt(request.query.sort) || 1;
 
-        const products = productsManager.getProducts(page,limit,query,sort);
-           
-            return response.status(200).send(
-                {
+        const products = await productsManager.getProducts({page,limit,query,sort});     
+            return response.status(200).json(
+                {   
                     status: 'success',
-                    payload: products,
+                    payload: products.docs,
                     totalPages: products.totalPages,
                     prevPage: products.prevPage,
                     nextPage: products.nextPage,
                     page: products.page,
                     hasPrevPage: products.hasPrevPage,
                     hasNextPage: products.hasNextPage,
-                    prevLink: products.hasPrevPage ? `/api/products?limit=${limit}&page=${productos.prevPage}&sort=${sort}&query=${query}` : null,
-                    nextLink: products.hasNextPage ? `/api/products?limit=${limit}&page=${productos.nextPage}&sort=${sort}&query=${query}` : null,
+                    prevLink: products.hasPrevPage ? `/api/products?limit=${limit}&page=${products.prevPage}&sort=${sort}&query=${query}` : null,
+                    nextLink: products.hasNextPage ? `/api/products?limit=${limit}&page=${products.nextPage}&sort=${sort}&query=${query}` : null,
                 }
-
             );
     }
     catch (error) {

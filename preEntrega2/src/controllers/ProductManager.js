@@ -1,4 +1,5 @@
 const ProductModel = require('../models/products.model.js');
+const { options } = require('../routes/products.router.js');
 
 class ProductManager {
 
@@ -24,20 +25,18 @@ class ProductManager {
 
 
 
-    async getProducts(page,limit,query,sort) {
+    async getProducts({ page, limit, query, sort }) {
         try {
-            const products = {};
-                if(sort){
-                    products = await ProductModel.paginate({}, { limit, page, sort: {category: query} })
-                }
-                
-                
-                
-                return { status: true, products };
-                
-
-           
-            
+            let products;
+            sort > 0 ? 1 : -1 //Ascendente o Descendente s/ numeración.
+            if (query) {
+                products = await ProductModel.paginate({ category: { $eq: query } }, { limit, page, sort: { price: sort } })
+                return products ;
+            }
+            else{
+                products = await ProductModel.paginate({}, { limit, page, sort: { price: sort } })
+                return products ;
+            }
         } catch (error) {
             return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` };
         }
