@@ -47,6 +47,26 @@ class CartManager {
 
     }
 
+    async updateQuantity(id, productId, quantity = 1) {
+        try {
+            const cartFound = await CartModel.findById(id);
+            if (cartFound) {
+                const existingProduct = cartFound.products.find(e => e.product.toString() == productId);
+                if (existingProduct) {
+                    existingProduct.quantity += quantity;
+                    await cartFound.save();
+                    return { status: true, message: 'Producto Agregado' }
+                }
+                return { status: false, message: 'Producto no encontrado' }
+            }
+
+            return { status: false, message: `ERROR Not Found : ${id}` }
+
+        } catch (error) {
+            return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` }
+        }
+    }
+
     async deleteProduct(id, productId, quantity = 1) {
         try {
             const cartFound = await CartModel.findById(id);
@@ -74,19 +94,33 @@ class CartManager {
 
     }
 
-    async emptyCart(id){
+    async emptyCart(id) {
         try {
             const cartFound = await CartModel.findById(id);
             if (cartFound) {
                 cartFound.products = []
-                cartFound.__v = 0;
+                // cartFound.__v = 0;
                 await cartFound.save();
-                return { status: true, message: 'Carrito Eliminado:'};
+                return { status: true, message: 'Carrito Eliminado:' };
             }
             return { status: false, message: `ERROR Not Found : ${id}` }
         } catch (error) {
             return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` }
         }
+    }
+
+    async updateCart(id, data){
+        try {
+            const cartFound = await CartModel.findById(id);
+            if(cartFound){
+                cartFound.products = data ;
+                return { status: true, message: 'Formato Actualizado' };
+            } 
+            return { status: false, message: `ERROR Not Found : ${id}` }
+        } catch (error) {
+            return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` }
+        }
+
     }
 
 }

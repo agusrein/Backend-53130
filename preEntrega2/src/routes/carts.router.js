@@ -1,6 +1,6 @@
 const CartManager = require('../controllers/CartManager');
 const express = require('express');
-const cartsModel = require('../models/carts.model');
+
 
 const router = express.Router();
 
@@ -67,6 +67,27 @@ router.delete('/carts/:cid', async (request, response)=>{
     }
 })
 
+router.put('/carts/:cid/products/:pid' , async (request,response) =>{
+    const pid = request.params.pid;
+    const cid = request.params.cid;
+    let quantity;
+    try {
+        const updateQuantity = await cartManager.updateQuantity(cid,pid,quantity)
+        updateQuantity.status ? response.status(200).send({ message: updateQuantity.message}) : response.status(404).send({ message: updateQuantity.message });
+    } catch (error) {
+        response.status(500).send(error.message);
+    }
+})
 
+router.put('/carts/:cid', async (request,response) =>{
+    const cid = request.params.cid;
+    const data = request.body;
+    try {
+        const newFormat = await cartManager.updateCart(cid,data)
+        newFormat.status ? response.status(200).send({message: newFormat.message}) : response.status(404).send({message: newFormat.message})
+    } catch (error) {
+        response.status(500).send(error.message);
+    }
+})
 
 module.exports = router;

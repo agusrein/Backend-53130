@@ -1,0 +1,12 @@
+<h3 class="text-center">Carrito</h3>
+
+{{#each cart}}
+<div class="d-flex justify-content-center col-12">
+  <div class="border rounded-2 col-6 mt-3 mb-3 p-3">
+    <p class="text-center fw-semibold">{{this.product.title}}</p>
+    <p>{{this.product.description}}</p>
+    <p>Cantidad: {{this.quantity}}</p>
+  </div>
+</div>
+  
+{{/each}}

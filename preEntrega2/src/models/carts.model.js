@@ -5,7 +5,7 @@ const cartsSchema = new mongoose.Schema({
         {
             product: {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: "Product",
+                ref: "products",
                 required: true
             },
             quantity:{
@@ -15,6 +15,11 @@ const cartsSchema = new mongoose.Schema({
         }
     ]
 });
+
+cartsSchema.pre("findOne", function(next){
+    this.populate("products.product");
+    next();
+})
 
 const cartsModel = mongoose.model("carts", cartsSchema);
 module.exports = cartsModel;

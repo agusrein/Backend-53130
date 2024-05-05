@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const ProductManager = require('../controllers/ProductManager');
 const productsManager = new ProductManager();
+const CartManager = require('../controllers/CartManager');
+const cartManager = new CartManager();
 
 router.get('/products', async (request, response) => {
     try {
@@ -34,8 +36,6 @@ router.get('/products', async (request, response) => {
 })
 
 
-
-
 router.get("/realtimeproducts", (request, response) => {
     try {
         response.render('realtimeproducts')
@@ -46,6 +46,27 @@ router.get("/realtimeproducts", (request, response) => {
 
 router.get("/chat", async (req, res) => {
     res.render("messages");
+})
+
+router.get("/carts/:cid", async (req, res) => { //6633aeb7cab032e9126855da ID TEST
+    try {
+        const cid = req.params.cid;
+        const cart = await cartManager.getProductsByCart(cid);
+        console.log(cart)
+        if(cart.status){
+            const products = cart.cart.products.map(e => ({
+                product: e.product.toObject(),
+                quantity: e.quantity
+             }));
+             res.render('carts', {cart: products} )
+        }
+        else{res.status(404).send({ message: cart.message });}
+        
+    } catch (error) {
+        res.status(500).send({ message: error.message });
+    }
+
+
 })
 
 module.exports = router;
