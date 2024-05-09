@@ -1,0 +1,18 @@
+<h3>Registrate</h3>
+
+<form action="/api/register" method="post">
+    <label for="first-name">Nombre</label>
+    <input type="text" name="first_name" id="first_name" placeholder="Nombre" required>
+    <label for="last-name">Apellido</label>
+    <input type="text" name="last_name" id="last_name" placeholder="Apellido" required>
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" placeholder="Email" required>
+    <label for="pass">Contraseña</label>
+    <input type="password" name="pass" id="pass" placeholder="Contraseña" required>
+    <label for="age">Edad</label>
+    <input type="number" name="age" id="age" placeholder="Edad" required>
+    <button type="submit">Registrarse</button>
+</form>
+{{#if message}}
+<p>{{message}}</p>
+{{/if}}

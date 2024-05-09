@@ -69,4 +69,12 @@ router.get("/carts/:cid", async (req, res) => { //6633aeb7cab032e9126855da ID TE
 
 })
 
+router.get("/login", (req,res) =>{
+res.render("login")
+})
+
+router.get("/register", (req,res) =>{
+    res.render("register")
+})
+
 module.exports = router;

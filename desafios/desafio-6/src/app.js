@@ -1,14 +1,17 @@
 const productsRouter = require('./routes/products.router');
 const cartsRouter = require('./routes/carts.router');
 const viewsRouter = require('./routes/views.router');
+const usersRouter = require('./routes/user.router.js');
+const sessionsRouter = require('./routes/session.router.js')
 const express = require('express');
 const app = express();
 const PUERTO = 8080;
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const exphbs = require('express-handlebars');
 const socket = require('socket.io');
 require('./database.js')
-const ProductManager = require('./controllers/ProductManager');
-const productManager = new ProductManager()
+
 
 
 
@@ -17,10 +20,21 @@ const productManager = new ProductManager()
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static("./src/public"));
+app.use(session({
+    secret: 'secretCode',
+    resave: true,
+    saveUninitialized:true,
+    store: MongoStore.create({
+        mongoUrl: 'mongodb+srv://agusrei:15623748@cluster0.kdax9sq.mongodb.net/Ecommerce?retryWrites=true&w=majority&appName=Cluster0',
+        ttl: 10000
+    })
+}))
 
 //ROUTES
 app.use('/api', productsRouter);
 app.use('/api', cartsRouter);
+app.use('/api', sessionsRouter);
+app.use('/api', usersRouter);
 app.use('/', viewsRouter);
 
 
