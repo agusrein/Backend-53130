@@ -19,6 +19,7 @@ router.get('/products', async (request, response) => {
         })
 
         response.render('home', {
+            user: request.session.user,
             products: finalProducts,
             hasPrevPage: products.hasPrevPage,
             hasNextPage: products.hasNextPage,
@@ -77,4 +78,10 @@ router.get("/register", (req,res) =>{
     res.render("register")
 })
 
+router.get("/profile", (req,res)=>{
+    if(!req.session.login){
+        return res.redirect("/login");
+    }
+    return res.render("profile")
+})
 module.exports = router;
