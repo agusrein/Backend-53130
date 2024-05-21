@@ -2,14 +2,14 @@
 <div class="d-flex justify-content-center w-100">
     <div class="d-flex align-content-center flex-column col-4">
         <form class="d-flex flex-column" action="/api/register" method="post">
-            <label class="mt-2  border-warning-subtle rounded-2" for="first-name">Nombre</label>
+            <label class="mt-2  border-warning-subtle rounded-2" for="first_name">Nombre</label>
             <div class="input-group mb-3 mt-1">
                 <input type="text" class="form-control border-warning-subtle" placeholder="Nombre" name="first_name"
                     id="first_name" aria-describedby="basic-addon1" required>
             </div>
 
 
-            <label class="mt-2  border-warning-subtle rounded-2" for="last-name">Apellido</label>
+            <label class="mt-2  border-warning-subtle rounded-2" for="last_name">Apellido</label>
             <div class="input-group mb-3 mt-1">
                 <input type="text" class="form-control border-warning-subtle" placeholder="Apellido" name="last_name"
                     id="last_name" aria-describedby="basic-addon1" required>
@@ -39,9 +39,7 @@
             <button class="mt-3 btn btn-warning border-warning rounded-2" type="submit">Registrarse</button>
 
         </form>
-        {{#if success}}
-        <p class="text-center mt-3 text-success">{{message}}.</p>
-        {{else}}
+        {{#if message}}
         <p class="text-center mt-3 text-danger">{{message}}.</p>
         {{/if}}
     </div>

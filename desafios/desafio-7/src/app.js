@@ -10,6 +10,8 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const exphbs = require('express-handlebars');
 const socket = require('socket.io');
+const passport = require('passport');
+const initializePassport = require('./config/passport.config.js');
 require('./database.js')
 
 
@@ -29,6 +31,11 @@ app.use(session({
         ttl: 10000
     })
 }))
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 
 //ROUTES
 app.use('/api', productsRouter);

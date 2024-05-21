@@ -82,6 +82,6 @@ router.get("/profile", (req,res)=>{
     if(!req.session.login){
         return res.redirect("/login");
     }
-    return res.render("profile")
+    return res.render("profile", {user: req.session.user})
 })
 module.exports = router;
