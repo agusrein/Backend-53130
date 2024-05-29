@@ -12,11 +12,11 @@ router.get('/products', async (request, response) => {
         let query = request.query.category || null;
         let sort = parseInt(request.query.sort) || 1;
 
-        const products = await productsManager.getProducts({page,limit,query,sort});     
+        const products = await productsManager.getProducts({page,limit,query,sort});   
             return response.status(200).json(
                 {   
                     status: 'success',
-                    payload: products.docs,
+                    payload: products.docs, 
                     totalPages: products.totalPages,
                     prevPage: products.prevPage,
                     nextPage: products.nextPage,

@@ -6,12 +6,11 @@ const sessionsRouter = require('./routes/session.router.js')
 const express = require('express');
 const app = express();
 const PUERTO = 8080;
-const session = require('express-session');
-const MongoStore = require('connect-mongo');
 const exphbs = require('express-handlebars');
 const socket = require('socket.io');
 const passport = require('passport');
-const initializePassport = require('./config/passport.config.js');
+const {initializePassport} = require('./config/passport.config.js');
+const cookieParser = require('cookie-parser');
 require('./database.js')
 
 
@@ -22,18 +21,9 @@ require('./database.js')
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static("./src/public"));
-app.use(session({
-    secret: 'secretCode',
-    resave: true,
-    saveUninitialized:true,
-    store: MongoStore.create({
-        mongoUrl: 'mongodb+srv://agusrei:15623748@cluster0.kdax9sq.mongodb.net/Ecommerce?retryWrites=true&w=majority&appName=Cluster0',
-        ttl: 10000
-    })
-}))
+app.use(cookieParser());
 initializePassport();
 app.use(passport.initialize());
-app.use(passport.session());
 
 
 

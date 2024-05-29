@@ -4,8 +4,10 @@ const ProductManager = require('../controllers/ProductManager');
 const productsManager = new ProductManager();
 const CartManager = require('../controllers/CartManager');
 const cartManager = new CartManager();
+const passport = require('passport');
+const {jwtAuth} = require('../config/passport.config.js')
 
-router.get('/products', async (request, response) => {
+router.get('/products',passport.authenticate('jwt', { session: false }), async (request, response) => {
     try {
         let page = parseInt(request.query.page) || 1;
         let limit = parseInt(request.query.limit) || 10;
@@ -19,7 +21,7 @@ router.get('/products', async (request, response) => {
         })
 
         response.render('home', {
-            user: request.session.user,
+            user: request.user.user,
             products: finalProducts,
             hasPrevPage: products.hasPrevPage,
             hasNextPage: products.hasNextPage,
@@ -78,10 +80,7 @@ router.get("/register", (req,res) =>{
     res.render("register")
 })
 
-router.get("/profile", (req,res)=>{
-    if(!req.session.login){
-        return res.redirect("/login");
-    }
-    return res.render("profile", {user: req.session.user})
-})
+router.get("/profile", jwtAuth, (req, res) => {
+    return res.render("profile", { user: req.user.user });
+});
 module.exports = router;
