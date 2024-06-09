@@ -1,100 +1,109 @@
-const ProductModel = require('../models/products.model.js');
-const { options } = require('../routes/products.router.js');
+const { productServices } = require('../services/index.js')
 
 class ProductManager {
 
-    async addProduct(title, description, price, thumbnail = [], code, stock, status = true, img = "", category) {
-        const product = { title, description, price, thumbnail, code, stock, status, img, category };
-        const existingProduct = await ProductModel.findOne({ code: code });
+    async getProducts(request, response) {
         try {
-            if (existingProduct) {
-                return { status: false, message: `El producto con el código ${product.code} ya existe.` }
+            let page = parseInt(request.query.page) || 1;
+            let limit = parseInt(request.query.limit) || 10;
+            let query = request.query.category || null;
+            let sort = parseInt(request.query.sort) || 1;
 
-            } else if (!product.title || !product.description || !product.price || !product.stock || !product.category) {
-                return { status: false, message: 'Debe llenar todos los datos para ingresar un artículo' }
-
-            } else {
-                const newProduct = ProductModel({ ...product })
-                await newProduct.save();
-                return { status: true, message: 'PRODUCTO AGREGADO EXITOSAMENTE' };
-            }
-        } catch (error) {
-            return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` }
-        }
-    }
-
-
-
-    async getProducts({ page, limit, query, sort }) {
-        try {
-            let products;
-            sort > 0 ? 1 : -1 //Ascendente o Descendente s/ numeración.
-            if (query) {
-                products = await ProductModel.paginate({ category: { $eq: query } }, { limit, page, sort: { price: sort } })
-                return products ;
-            }
-            else{
-                products = await ProductModel.paginate({}, { limit, page, sort: { price: sort } })
-                return products ;
-            }
-        } catch (error) {
-            return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` };
-        }
-    }
-
-
-
-
-    async getProductById(id) {
-        try {
-            const productFound = await ProductModel.findById(id);
-            if (productFound) {
-                return { status: true, message: `Producto ${id} encontrado :`, product: productFound };
-            }
-            else {
-                return { status: false, message: `Product Not Found : (${id})` }
-            }
-        }
-        catch (error) {
-            return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` }
-        }
-    }
-
-
-    async updateProduct(id, { property, value }) {
-        try {
-            const product = await ProductModel.findOne({ _id: id });
-            if (product) {
-                //Corroboro que la propiedad que se pasa como parámetro se encuentre y no se me agregue al objeto como una nueva
-                if (property in product) {
-                    product[property] = value;
-                    await product.save();
-                    return { status: true, message: `La propiedad ${property} del producto ${id} se ha modificado correctamente.` };
-                } else {
-                    return { status: false, message: `La propiedad ${property} no existe en el producto ${id}. No se ha modificado.` };
+            const products = await productServices.getProducts({ page, limit, query, sort });
+            return response.status(200).send(
+                {
+                    status: 'success',
+                    payload: products.docs,
+                    totalPages: products.totalPages,
+                    prevPage: products.prevPage,
+                    nextPage: products.nextPage,
+                    page: products.page,
+                    hasPrevPage: products.hasPrevPage,
+                    hasNextPage: products.hasNextPage,
+                    prevLink: products.hasPrevPage ? `/api/products?limit=${limit}&page=${products.prevPage}&sort=${sort}&query=${query}` : null,
+                    nextLink: products.hasNextPage ? `/api/products?limit=${limit}&page=${products.nextPage}&sort=${sort}&query=${query}` : null,
                 }
-            } else {
-                return { status: false, message: `Product Not Found : (${id})` }
-            }
-        } catch (error) {
-            return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` };
+            );
+        }
+        catch (error) {
+            response.status(500).send({ message: error.message });
+        }
+    };
+
+    async getProductsById(request, response) {
+        try {
+            let id = request.params.pid;
+            let product = await productServices.getProductById(id);
+            product.status ? response.status(200).send({ message: product.message, product: product.product }) : response.status(404).send({ message: product.message })
+
+        }
+        catch {
+            response.status(500).send({ message: error.message });
         }
     }
 
-
-
-    async deleteProduct(id) {
+    async addProduct(request, response) {
+        const { title, description, price, thumbnail, code, stock, status, img, category } = request.body;
         try {
-            const productToDelete = await ProductModel.findByIdAndDelete(id)
-            if (productToDelete) {
-                return { status: true, message: `El producto ${id} se ha eliminado.` };
-            }
-            else { return { status: false, message: `Product Not Found : (${id})` } }
+            const result = await productServices.addProduct(title, description, price, thumbnail, code, stock, status, img, category);
+            result.status ? response.status(200).send({ message: result.message }) : response.status(404).send({ message: result.message })
+        } catch (error) {
+            response.status(500).send({ message: `ARTICULO NO AGREGADO: ${error.message}` });
         }
-        catch (error) {
-            return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` }
+    }
+
+    async updateProduct(request, response) {
+        let id = request.params.pid;
+        const { property, value } = request.body;
+        try {
+            const result = await productServices.updateProduct(id, { property, value });
+            result.status ? response.status(200).send({ message: result.message }) : response.status(404).send({ message: result.message })
+        } catch (error) {
+            response.status(500).send({ message: `ERROR AL ACTUALIZAR EL PRODUCTO: ${error.message}` });
+        }
+    }
+
+    async deleteProduct(request, response) {
+        let id = request.params.pid;
+        try {
+            const result = await productServices.deleteProduct(id);
+            result.status ? response.status(200).send({ message: result.message }) : response.status(404).send({ message: result.message })
+
+        } catch (error) {
+            response.status(500).send({ message: `ERROR AL ELIMINAR EL PRODUCTO: ${error.message}` })
+        }
+    }
+
+    async renderProducts(request,response){
+        try {
+            let page = parseInt(request.query.page) || 1;
+            let limit = parseInt(request.query.limit) || 10;
+            let query = request.query.category || null;
+            let sort = parseInt(request.query.sort) || 1;
+            const products = await productServices.getProducts({ page, limit, query, sort });
+    
+            const finalProducts = products.docs.map(e => {
+                const { _id, ...rest } = e.toObject();
+                return rest;
+            })
+    
+            response.render('home', {
+                user: request.user.user,
+                products: finalProducts,
+                hasPrevPage: products.hasPrevPage,
+                hasNextPage: products.hasNextPage,
+                prevPage: products.prevPage,
+                nextPage: products.nextPage,
+                currentPage: products.page,
+                totalPages: products.totalPages,
+                prevLink: products.hasPrevPage ? `/products?limit=${limit}&page=${products.prevPage}&sort=${sort}&query=${query}` : null,
+                nextLink: products.hasNextPage ? `/products?limit=${limit}&page=${products.nextPage}&sort=${sort}&query=${query}` : null,
+            });
+        } catch (error) {
+            response.status(500).send({ message: error.message });
         }
     }
 }
+
 
 module.exports = ProductManager;
