@@ -1,4 +1,7 @@
 const CartModel = require('../models/carts.model.js');
+const UserModel = require('../models/user.model.js');
+const TicketModel = require('../models/tickets.model.js');
+const {totalPurchase,generateCode} = require('../utils/utilsPurchase.js')
 
 class CartRepository {
     async createCart() {
@@ -69,8 +72,8 @@ class CartRepository {
         try {
             const cartFound = await CartModel.findById(id);
             if (cartFound) {
-                const existingProduct = cartFound.products.find(e => e.product.toString() == productId);
-                const existingProductIndex = cartFound.products.findIndex(e => e.product.toString() == productId);
+                const existingProduct = cartFound.products.find(e => e.product._id.toString() == productId);
+                const existingProductIndex = cartFound.products.findIndex(e => e.product._id.toString() == productId);
                 if (existingProduct) {
                     existingProduct.quantity -= quantity;
                     if (existingProduct.quantity == 0) {
@@ -123,21 +126,36 @@ class CartRepository {
 
     async confirmPurchase(cart, products) {
         try {
+            const cartUser = await UserModel.findOne({ cart: cart._id });
             const notAvailable = [];
-            products.map(e=>{
-                if(e.product.stock < e.quantity){
+            for (let e of products) {
+                if (e.product.stock < e.quantity) {
                     notAvailable.push(e.product);
-                    return response.status(200).send(notAvailable)
-                }
-                else{
+                    return { status: false, message: `No hay suficiente stock del producto ${e.product.title} para realizar la compra`, notAvailable }
+                } else {
                     e.product.stock -= e.quantity;
-                   return response.status(200).send(e.product) 
+                    await e.product.save();
+                    
                 }
-            })
+                const ticket = new TicketModel({
+                    code: generateCode(8),
+                    purchase_datetime: new Date(),
+                    amount: totalPurchase(products),
+                    purchase: cartUser._id
+                })
+
+                await ticket.save();
+                cart.products = cart.products.filter(e => notAvailable.some(id => id.equals(e.product)));
+                await cart.save();
+
+                return{status: true, message:`Detalle de compra`, ticket: ticket}
+            }
+
+
         } catch (error) {
             return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` }
         }
-        
+
     }
 
 

@@ -19,7 +19,7 @@ router.put('/carts/:cid/products/:pid', cartManager.updateQuantity);
 
 router.put('/carts/:cid', cartManager.updateCart);
 
-router.post('/carts/:cid/purchase', cartManager.confirmPurchase);
+router.put('/carts/:cid/purchase', cartManager.confirmPurchase);
 
 
 module.exports = router;

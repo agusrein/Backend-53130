@@ -1,12 +1,11 @@
 const passport = require('passport');
 const local = require('passport-local');
 const userModel = require('../models/user.model.js');
+const cartModel = require('../models/carts.model.js');
 const github = require('passport-github2');
 const jwt = require('passport-jwt');
 const { createHash, isValidPassword } = require('../utils/hashbcrypt.js');
 const configObject = require('../config/config.js');
-
-
 
 
 const LocalStrategy = local.Strategy;
@@ -25,8 +24,10 @@ const initializePassport = () => {
             if (user) {
                 return done(null, false, { message: 'El email ingresado ya se encuentra registrado' })
             }
+            const newCart = new cartModel();
+            newCart.save()
             const role = email === 'admincoder@coder.com' ? 'admin' : 'user'
-            const newUser = { first_name, last_name, email, pass: createHash(pass), age, role }
+            const newUser = { first_name, last_name, email, pass: createHash(pass), age, role ,cart: newCart._id}
             const result = await userModel.create(newUser)
             return done(null, result)
         } catch (error) {
