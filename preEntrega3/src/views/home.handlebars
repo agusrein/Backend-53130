@@ -1,19 +1,18 @@
 <link rel="stylesheet" href="styles/styles.css">
 {{#if user}}
 <div class="d-flex w-100 justify-content-evenly mt-5">
-<div class="d-flex justify-content-center">
-    <h3 class="me-5 fs-4 align-self-center mb-0">Bienvenido</h3>
-    <p class="align-self-center mb-0">{{user.name}} {{user.last_name}}</p>
+    <div class="d-flex justify-content-center">
+        <h3 class="me-5 fs-4 align-self-center mb-0">Bienvenido</h3>
+        <p class="align-self-center mb-0">{{user.name}} {{user.last_name}}</p>
+    </div>
+    <button class="btn btn-warning col-1"><a href="/api/logout" class="text-decoration-none">Cerrar Sesión</a></button>
 </div>
-<button class="btn btn-warning col-1"><a href="/api/logout" class="text-decoration-none">Cerrar Sesión</a></button>
-</div>
-{{/if}}
-{{#unless user}}
+{{else}}
 <div class="d-flex justify-content-center mt-4">
   <p class="align-self-center mb-0">Aún no te encuentras registrado. ¿Deseas Iniciar Sesión?</p>
   <button class="btn btn-warning ms-3"><a href="/login">Iniciar Sesión</a></button>
 </div>
-{{/unless}}
+{{/if}}
 <h3 class="text-center mt-4">Productos</h3>
 <div class="d-flex flex-wrap col-12 justify-content-center">
   {{#each products}}

@@ -7,7 +7,7 @@ const cartManager = new CartManager();
 const jwtAuth = require('../middleware/jwtAuthenticate.js');
 const roleCheck = require('../middleware/checkrole.js');
 
-router.get('/products', productsManager.renderProducts)
+router.get('/products',jwtAuth, productsManager.renderProducts)
 
 
 router.get("/realtimeproducts",jwtAuth,roleCheck('admin'), (request, response) => {
@@ -23,12 +23,9 @@ router.get("/realtimeproducts",jwtAuth,roleCheck('admin'), (request, response) =
 
 router.get("/chat",jwtAuth,roleCheck('user'), async (req, res) => {
     try {
-        if(req.unauthorized){
-            return res.render('unauthorized')
-        }
          return res.render("messages", {user: req.user});
     } catch (error) {
-        
+        return res.send(error)
     }
     
 })

@@ -7,17 +7,19 @@ const cartManager = new CartManager();
 
 router.post('/carts',jwtAuth,cartManager.createCart);
 
-router.get('/carts/:cid',jwtAuth, cartManager.getProductsByCart);
+router.post('/carts/:cid/products/:pid', cartManager.addProductToCart);
 
-router.post('/carts/:cid/products/:pid',jwtAuth, cartManager.addProductToCart);
+router.delete('/carts/:cid/products/:pid', cartManager.deleteProduct);
 
-router.delete('/carts/:cid/products/:pid',jwtAuth, cartManager.deleteProduct);
+router.delete('/carts/:cid', cartManager.emptyCart);
 
-router.delete('/carts/:cid',jwtAuth, cartManager.emptyCart);
+router.put('/carts/:cid/products/:pid', cartManager.updateQuantity);
 
-router.put('/carts/:cid/products/:pid',jwtAuth, cartManager.updateQuantity);
+router.put('/carts/:cid', cartManager.updateCart);
 
-router.put('/carts/:cid',jwtAuth, cartManager.updateCart);
+router.get('/carts/:cid', cartManager.renderCart);
+
+router.get('/carts/:cid', cartManager.getProductsByCart);
 
 router.put('/carts/:cid/purchase',jwtAuth, cartManager.confirmPurchase);
 
