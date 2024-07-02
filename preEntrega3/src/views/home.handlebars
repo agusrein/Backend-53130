@@ -8,6 +8,12 @@
 <button class="btn btn-warning col-1"><a href="/api/logout" class="text-decoration-none">Cerrar Sesión</a></button>
 </div>
 {{/if}}
+{{#unless user}}
+<div class="d-flex justify-content-center mt-4">
+  <p class="align-self-center mb-0">Aún no te encuentras registrado. ¿Deseas Iniciar Sesión?</p>
+  <button class="btn btn-warning ms-3"><a href="/login">Iniciar Sesión</a></button>
+</div>
+{{/unless}}
 <h3 class="text-center mt-4">Productos</h3>
 <div class="d-flex flex-wrap col-12 justify-content-center">
   {{#each products}}
@@ -23,7 +29,7 @@
       <p class="fs-5 fw-semibold">$ {{this.price}}</p>
     </div>
     </div>
-    <button class="rounded-2">Agregar al carrito</button>
+    <button class="rounded-2 btn btn-info">Agregar al carrito</button>
   </div>
   
   {{/each}}

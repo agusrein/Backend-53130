@@ -1,4 +1,7 @@
 const ProductModel = require('../models/products.model.js');
+const customError = require('../services/errors/customErrors.js');
+const Errors = require('../services/errors/enum.js');
+const generateUndefinedTypeError = require('../services/errors/info.js');
 
 class ProductRepository {
     async addProduct(title, description, price, thumbnail = [], code, stock, status = true, img = "", category) {
@@ -9,7 +12,12 @@ class ProductRepository {
                 return { status: false, message: `El producto con el código ${product.code} ya existe.` }
 
             } else if (!product.title || !product.description || !product.price || !product.stock || !product.category) {
-                return { status: false, message: 'Debe llenar todos los datos para ingresar un artículo' }
+                throw customError.createError({
+                    name: 'Nuevo Producto',
+                    cause: generateUndefinedTypeError(product),
+                    message: 'Error en el ingreso de datos',
+                    code: Errors.UNDEFINED_DATA
+                })
 
             } else {
                 const newProduct = ProductModel({ ...product })
@@ -21,7 +29,7 @@ class ProductRepository {
         }
     }
 
-    async getProducts({ page, limit, query, sort }) {
+    async getProducts({ page = 1, limit = 10, query = null, sort = 1}={}) {
         try {
             let products;
             sort > 0 ? 1 : -1 //Ascendente o Descendente s/ numeración.
@@ -29,9 +37,13 @@ class ProductRepository {
                 products = await ProductModel.paginate({ category: { $eq: query } }, { limit, page, sort: { price: sort } })
                 return products ;
             }
+            else if(!page && !limit && !query && !sort){
+                products = await ProductModel.find().lean();
+                return products;
+            }
             else{
                 products = await ProductModel.paginate({}, { limit, page, sort: { price: sort } })
-                return products ;
+                return products;
             }
         } catch (error) {
             return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` };

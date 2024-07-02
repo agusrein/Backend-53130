@@ -4,6 +4,7 @@ const roleCheck = (role) => {
             next();
         } else {
             req.unauthorized = true;
+            res.render('unauthorized')
             next();
         }
     };
