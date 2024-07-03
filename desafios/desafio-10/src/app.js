@@ -10,6 +10,7 @@ const exphbs = require('express-handlebars');
 const passport = require('passport');
 const initializePassport = require('./config/passport.config.js');
 const cookieParser = require('cookie-parser');
+const errorHandler = require('./middleware/error.js');
 require('./database.js')
 
 
@@ -25,13 +26,13 @@ initializePassport();
 app.use(passport.initialize());
 
 
-
 //ROUTES
 app.use('/api', productsRouter);
 app.use('/api', cartsRouter);
 app.use('/api', sessionsRouter);
 app.use('/api', usersRouter);
 app.use('/', viewsRouter);
+
 
 
 //HANDLEBARS
@@ -49,4 +50,8 @@ const httpServer = app.listen(PUERTO, () => {
 //WEBSOCKET
 const SocketManager = require('./sockets/socketManager.js');
 new SocketManager(httpServer);
+
+
+//MIDDLEWARE
+app.use(errorHandler);
 

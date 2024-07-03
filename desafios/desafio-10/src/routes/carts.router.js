@@ -1,13 +1,11 @@
 const CartManager = require('../controllers/CartManager');
 const express = require('express');
-
+const jwtAuth = require('../middleware/jwtAuthenticate.js');
 const router = express.Router();
 
 const cartManager = new CartManager();
 
-router.post('/carts', cartManager.createCart);
-
-router.get('/carts/:cid', cartManager.getProductsByCart);
+router.post('/carts',jwtAuth,cartManager.createCart);
 
 router.post('/carts/:cid/products/:pid', cartManager.addProductToCart);
 
@@ -19,7 +17,11 @@ router.put('/carts/:cid/products/:pid', cartManager.updateQuantity);
 
 router.put('/carts/:cid', cartManager.updateCart);
 
-router.put('/carts/:cid/purchase', cartManager.confirmPurchase);
+router.get('/carts/:cid', cartManager.renderCart);
+
+router.get('/carts/:cid', cartManager.getProductsByCart);
+
+router.put('/carts/:cid/purchase',jwtAuth, cartManager.confirmPurchase);
 
 
 module.exports = router;

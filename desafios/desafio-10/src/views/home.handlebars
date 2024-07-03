@@ -1,11 +1,16 @@
 <link rel="stylesheet" href="styles/styles.css">
 {{#if user}}
 <div class="d-flex w-100 justify-content-evenly mt-5">
-<div class="d-flex justify-content-center">
-    <h3 class="me-5 fs-4 align-self-center mb-0">Bienvenido</h3>
-    <p class="align-self-center mb-0">{{user.name}} {{user.last_name}}</p>
+    <div class="d-flex justify-content-center">
+        <h3 class="me-5 fs-4 align-self-center mb-0">Bienvenido</h3>
+        <p class="align-self-center mb-0">{{user.name}} {{user.last_name}}</p>
+    </div>
+    <button class="btn btn-warning col-1"><a href="/api/logout" class="text-decoration-none">Cerrar Sesión</a></button>
 </div>
-<button class="btn btn-warning col-1"><a href="/api/logout" class="text-decoration-none">Cerrar Sesión</a></button>
+{{else}}
+<div class="d-flex justify-content-center mt-4">
+  <p class="align-self-center mb-0">Aún no te encuentras registrado. ¿Deseas Iniciar Sesión?</p>
+  <button class="btn btn-warning ms-3"><a href="/login">Iniciar Sesión</a></button>
 </div>
 {{/if}}
 <h3 class="text-center mt-4">Productos</h3>
@@ -23,7 +28,7 @@
       <p class="fs-5 fw-semibold">$ {{this.price}}</p>
     </div>
     </div>
-    <button class="rounded-2">Agregar al carrito</button>
+    <button class="rounded-2 btn btn-info">Agregar al carrito</button>
   </div>
   
   {{/each}}
