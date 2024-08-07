@@ -27,7 +27,8 @@ const initializePassport = () => {
             const newCart = new cartModel();
             newCart.save()
             const role = email === 'admincoder@coder.com' ? 'admin' : 'user'
-            const newUser = { first_name, last_name, email, pass: createHash(pass), age, role ,cart: newCart._id}
+            const resetToken = { token: "", expire: null };
+            const newUser = { first_name, last_name, email, pass: createHash(pass), age, role ,cart: newCart._id, resetToken}
             const result = await userModel.create(newUser)
             return done(null, result)
         } catch (error) {
@@ -103,70 +104,6 @@ const cookieExtractor = (req) => {
 }
 
 
-// ------------------------------------------------------------//
-const EmailManager = require('../services/email.js');
-const emailManager = new EmailManager;
-const generateResetTocken = require('../utils/resetTocken.js');
 
-async requestPasswordReset(req,res) {
-    const {email} = req.body;
-    try {
-        const user = await userModel.findOne({email})
-        if(!user){
-            return res.status(404).send('Usuario no encontrado')
-        }
-        const token = generateResetTocken();
-        user.resetToken = {
-            token:token,
-            expire: new Date(Date.now()+3600000)
-        } 
-        await user.save();
-        await emailManager.sendEmailPasswordReset(email,user.first_name,token);
-        res.redirect("/")
-    } catch (error) {
-        res.status(500).send('Error interno del servidor');
-        
-    }
-}
-
-async resetPassword(req,res){
-    const {email, pass, token} = req.body;
-    try {
-        const user = await userModel.findOne({email});
-        if(!user){
-            return res.render('ressetpassword', {error: 'Usuario no encontrado'})
-        }
-        if(!resetToken || resetToken.token !== token){
-            return res.render('changepassword', {error: 'Codigo inválido'})
-        }
-        if(Date()<resetToken.expire){
-            return res.render('ressetpassword', {error: 'El token ingresado ha Expirado'})
-        }
-        if(isValidPassword(pass,user)){
-            return res.render('changepassword', {error: 'La nueva contraseña no puede ser igual a la anterior'})
-        }
-        user.pass = createHash(pass);
-        user.resetToken = undefined;
-        await user.save();
-        return res.redirect('/login')
-    } catch (error) {
-        res.status(500).render(resetPassword, {error: 'Error del servidor'})
-    }
-}
-
-async changePremiumRol(req,res){
-    const {uid} = req.params;
-try {
-    const user = await userModel.findById(uid);
-    if(!user){
-        return res.status(404).send('Usuario no encontrado');
-    }
-    const newRole = user.role === "user" ? "premium" : "user"
-    await userModel.findByIdAndUpdate(uid,{role:newRole})
-    return res.status(200).send('Rol Actualizado')
-} catch (error) {
-    return res.status(500).send('Error en el servidor')
-    
-}}
 
 module.exports = initializePassport;

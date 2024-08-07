@@ -11,11 +11,11 @@ router.get('/products', productManager.getProducts);
 
 router.get('/products/:pid',jwtAuth,roleCheck('admin'), productManager.getProductsById);
 
-router.post('/products',jwtAuth,roleCheck('admin'), productManager.addProduct);
+router.post('/products',jwtAuth,roleCheck(['admin', 'premium']), productManager.addProduct);
 
-router.put('/products/:pid',jwtAuth,roleCheck('admin'), productManager.updateProduct);
+router.put('/products/:pid',jwtAuth,roleCheck(['admin', 'premium']), productManager.updateProduct);
 
-router.delete('/products/:pid',jwtAuth,roleCheck('admin'), productManager.deleteProduct);
+router.delete('/products/:pid',jwtAuth,roleCheck(['admin', 'premium']), productManager.deleteProduct);
 
 
 module.exports = router;

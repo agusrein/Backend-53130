@@ -44,6 +44,7 @@ class SocketManager {
                     product.status,
                     product.img,
                     product.category
+
                 );
                 if (result.status) {
                     console.log(result);

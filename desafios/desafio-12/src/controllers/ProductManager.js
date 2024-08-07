@@ -44,9 +44,10 @@ class ProductManager {
     }
 
     async addProduct(request, response) {
-        const { title, description, price, thumbnail, code, stock, status, img, category } = request.body;
+        const user = request.user;
+        const { title, description, price, thumbnail, code, stock, status, img, category, owner } = request.body;
         try {
-            const result = await productServices.addProduct(title, description, price, thumbnail, code, stock, status, img, category);
+            const result = await productServices.addProduct(user,title, description, price, thumbnail, code, stock, status, img, category, owner);
             result.status ? response.status(200).send({ message: result.message }) : response.status(404).send(result)
         } catch (error) {
             response.status(500).send({ message: `ARTICULO NO AGREGADO: ${error.message}` });
@@ -54,10 +55,11 @@ class ProductManager {
     }
 
     async updateProduct(request, response) {
+        const user = request.user;
         let id = request.params.pid;
         const { property, value } = request.body;
         try {
-            const result = await productServices.updateProduct(id, { property, value });
+            const result = await productServices.updateProduct(user,id, { property, value });
             result.status ? response.status(200).send({ message: result.message }) : response.status(404).send({ message: result.message })
         } catch (error) {
             response.status(500).send({ message: `ERROR AL ACTUALIZAR EL PRODUCTO: ${error.message}` });
@@ -65,9 +67,10 @@ class ProductManager {
     }
 
     async deleteProduct(request, response) {
+        const user = request.user;
         let id = request.params.pid;
         try {
-            const result = await productServices.deleteProduct(id);
+            const result = await productServices.deleteProduct(user,id);
             result.status ? response.status(200).send({ message: result.message }) : response.status(404).send({ message: result.message })
 
         } catch (error) {

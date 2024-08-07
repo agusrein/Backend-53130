@@ -1,27 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
-const jwt = require('jsonwebtoken');
-const {COOKIETOKEN, JWTKEY} = require('../config/config.js');
+const UserManager = require('../controllers/UserManager.js');
+const userManager = new UserManager();
 
 
-router.post("/register", async (req, res, next) => {
-    passport.authenticate("register", async (err, user, info) => {
-        if (err) {
-            return next(err);
-        }
-        if (!user) {
-            return res.status(400).render("register", { message: info.message });
-        }
-        const token = jwt.sign({user},JWTKEY,{expiresIn:'1d'})
-        res.cookie(COOKIETOKEN,token,{
-            httpOnly:true,
-            mxAge: 3600000
-        })
-        res.redirect('/products'); //CURRENT
-    })(req, res, next);
-});
-
-router.put("/premium/:uid", ) //CONTINUAR
+router.post('/register', userManager.register)
+router.post('/reset-password', userManager.requestPasswordReset)
+router.post('/change-password',userManager.resetPassword)
+router.put("/premium/:uid", userManager.changePremiumRol) 
 
 module.exports = router;
