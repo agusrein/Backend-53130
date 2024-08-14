@@ -1,6 +1,6 @@
 const { cartServices } = require('../services/index.js');
 
-class CartManager {
+class CartManager { 
 
     async createCart(request, response) {
         try {
@@ -30,8 +30,9 @@ class CartManager {
         const pid = request.params.pid;
         const cid = request.params.cid;
         const quantity = request.body.quantity;
+        const user = request.user;
         try {
-            const updateCart = await cartServices.addProductToCart(cid, pid, quantity);
+            const updateCart = await cartServices.addProductToCart(user,cid, pid, quantity);
             updateCart.status ? response.status(200).send({ message: updateCart.message }) : response.status(404).send({ message: updateCart.message })
 
         } catch (error) {

@@ -35,7 +35,8 @@ class UserManager {
                 httpOnly: true,
                 mxAge: 3600000
             })
-            return res.redirect("/products"); //CURRENT
+            return res.status(200).json({token})
+            // return res.redirect("/products"); //CURRENT
         })(req, res, next);
     }
 
@@ -55,11 +56,10 @@ class UserManager {
         try {
             const result = await userServices.requestPasswordReset(email)
             if(result.status){
-                // res.redirect("/")
-                return res.status(200).send({message: result.message})
+                return res.status(200).render('resetpassword',{message: result.message})
             }
             else{
-                return res.status(404).send({message: result.message})
+                return res.status(404).render('resetpassword',{error: result.message})
             }
             
         } catch (error) {
@@ -74,24 +74,19 @@ class UserManager {
         try {
             const result = await userServices.resetPassword(email,pass,token)
             if(result.status){
-                res.redirect('/login')
-                return res.status(200).send({message: result.message})
+                return res.status(200).render('changepassword',{success: result.message})
             }
             else if(!result.status && result.code == 1){
-                res.render('ressetpassword', { error: result.message})
-                return res.status(404).send({message: result.message})
+                return res.status(404).render('changepassword',{error: result.message})
             }
             else if(!result.status && result.code == 2 ){
-                res.render('changepassword', { error: 'Codigo inválido' })
-                return res.status(404).send({message: result.message})
+                return res.status(404).render('changepassword',{error: result.message})
             }
             else if(!result.status && result.code == 3){
-                res.render('ressetpassword', { error: result.message })
-                return res.status(404).send({message: result.message})
+                return res.status(404).render('changepassword',{error: result.message, message: 'Reenvíar nuevamente un código de restablecimiento'})
             }
             else if(!result.status && result.code == 4){
-                res.render('changepassword', { error: result.message })
-                return res.status(404).send({message: result.message})
+                return res.status(404).render('changepassword',{error: result.message})
             }
 
            
@@ -99,8 +94,6 @@ class UserManager {
             return res.status(500).send({ message: error.message });
         
         }
-
-
     }
 
 

@@ -1,6 +1,7 @@
 const CartModel = require('../models/carts.model.js');
 const UserModel = require('../models/user.model.js');
 const TicketModel = require('../models/tickets.model.js');
+const ProductModel = require('../models/products.model.js');
 const {totalPurchase,generateCode} = require('../utils/utilsPurchase.js')
 
 class CartRepository {
@@ -28,10 +29,14 @@ class CartRepository {
         }
     }
 
-    async addProductToCart(id, productId, quantity) {
+    async addProductToCart(user,id, productId, quantity) {
         try {
+            const product = await ProductModel.findById(productId)
             const cartFound = await CartModel.findById(id);
-            if (cartFound) {
+            if (user.role === 'premium' && product.owner.toString() === user._id.toString()) {
+                return { status: false, message: 'No puedes agregar tu propio producto al carrito.' };
+            }
+            else if (cartFound) {
                 const existingProduct = cartFound.products.find(e => e.product._id.toString() == productId);
                 existingProduct ? existingProduct.quantity += quantity : cartFound.products.push({ product: productId, quantity });
                 cartFound.markModified("products");

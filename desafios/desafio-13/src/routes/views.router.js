@@ -10,7 +10,7 @@ const roleCheck = require('../middleware/checkrole.js');
 router.get('/products',jwtAuth, productsManager.renderProducts)
 
 
-router.get("/realtimeproducts",jwtAuth,roleCheck('admin'), (request, response) => {
+router.get("/realtimeproducts",jwtAuth,roleCheck(['admin', 'premium']), (request, response) => {
     try {
         if(request.unauthorized){
            return response.render('unauthorized');
@@ -44,13 +44,15 @@ router.get("/profile", jwtAuth, (req, res) => {
     return res.render("profile", { user: req.user});
 });
 
+router.get('/reset-password', (req,res)=>{
+    return res.render('resetpassword')
+})
+
 router.get("/change-password", (req,res)=>{
     return res.render('changepassword');
 })
 
-router.get('/reset-password', (req,res)=>{
-    return res.render('resetpassword')
-})
+
 
 
 module.exports = router;

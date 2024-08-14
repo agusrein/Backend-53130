@@ -5,8 +5,8 @@ const userManager = new UserManager();
 
 
 router.post('/register', userManager.register)
-router.post('/requestPasswordReset', userManager.requestPasswordReset)
-router.post('/reset-password',userManager.resetPassword)
-// router.put("/premium/:uid", ) //CONTINUAR
+router.post('/reset-password', userManager.requestPasswordReset)
+router.post('/change-password',userManager.resetPassword)
+router.put("/premium/:uid", userManager.changePremiumRol) 
 
 module.exports = router;

@@ -1,11 +1,12 @@
 const ProductModel = require('../models/products.model.js');
+const UserModel = require('../models/user.model.js');
 const customError = require('../services/errors/customErrors.js');
 const Errors = require('../services/errors/enum.js');
 const generateUndefinedTypeError = require('../services/errors/info.js');
 
 class ProductRepository {
-    async addProduct(title, description, price, thumbnail = [], code, stock, status = true, img = "", category) {
-        const product = { title, description, price, thumbnail, code, stock, status, img, category };
+    async addProduct(user, title, description, price, thumbnail = [], code, stock, status = true, img = "", category, owner) {
+        const product = { title, description, price, thumbnail, code, stock, status, img, category, owner };
         const existingProduct = await ProductModel.findOne({ code: code });
         try {
             if (existingProduct) {
@@ -18,16 +19,23 @@ class ProductRepository {
                     message: 'Error en el ingreso de datos',
                     code: Errors.UNDEFINED_DATA
                 })
-
-            } else {
+            }
+            else {
+                if (user.role == 'premium') {
+                    product.owner = user._id;
+                }
+                else {
+                    const userAdmin = await UserModel.findOne({ role: 'admin' })
+                    product.owner = userAdmin._id;
+                }
                 const newProduct = ProductModel({ ...product })
                 await newProduct.save();
                 return { status: true, message: 'PRODUCTO AGREGADO EXITOSAMENTE' };
             }
         } catch (error) {
-            return { 
-                status: false, 
-                message: error.message, 
+            return {
+                status: false,
+                message: error.message,
                 name: error.name,
                 code: error.code,
                 cause: error.cause
@@ -35,19 +43,19 @@ class ProductRepository {
         }
     }
 
-    async getProducts({ page = 1, limit = 10, query = null, sort = 1}={}) {
+    async getProducts({ page = 1, limit = 10, query = null, sort = 1 } = {}) {
         try {
             let products;
             sort > 0 ? 1 : -1 //Ascendente o Descendente s/ numeración.
             if (query) {
                 products = await ProductModel.paginate({ category: { $eq: query } }, { limit, page, sort: { price: sort } })
-                return products ;
+                return products;
             }
-            else if(!page && !limit && !query && !sort){
+            else if (!page && !limit && !query && !sort) {
                 products = await ProductModel.find().lean();
                 return products;
             }
-            else{
+            else {
                 products = await ProductModel.paginate({}, { limit, page, sort: { price: sort } })
                 return products;
             }
@@ -71,15 +79,18 @@ class ProductRepository {
         }
     }
 
-    async updateProduct(id, { property, value }) {
+    async updateProduct(user, id, { property, value }) {
         try {
             const product = await ProductModel.findOne({ _id: id });
             if (product) {
                 //Corroboro que la propiedad que se pasa como parámetro se encuentre y no se me agregue al objeto como una nueva
                 if (property in product) {
-                    product[property] = value;
-                    await product.save();
-                    return { status: true, message: `La propiedad ${property} del producto ${id} se ha modificado correctamente.` };
+                    if (user.role === 'admin' || (user.role === 'premium' && product.owner.toString() === user._id.toString())) {
+                        product[property] = value;
+                        await product.save();
+                        return { status: true, message: `La propiedad ${property} del producto ${id} se ha modificado correctamente.` };
+                    } else { return { status: false, message: `No cuentas con autorización para modificar este producto.` }; }
+
                 } else {
                     return { status: false, message: `La propiedad ${property} no existe en el producto ${id}. No se ha modificado.` };
                 }
@@ -91,16 +102,20 @@ class ProductRepository {
         }
     }
 
-    async deleteProduct(id) {
+    async deleteProduct(user, id) {
         try {
-            const productToDelete = await ProductModel.findByIdAndDelete(id)
-            if (productToDelete) {
+            const productToDelete = await ProductModel.findById(id)
+            if (!productToDelete) {
+                return { status: false, message: `Product Not Found : (${id})` }
+            }
+            if (user.role === 'admin' || (user.role === 'premium' && productToDelete.owner.toString() === user._id.toString())) {
+                await ProductModel.findByIdAndDelete(id);
                 return { status: true, message: `El producto ${id} se ha eliminado.` };
             }
-            else { return { status: false, message: `Product Not Found : (${id})` } }
+            return { status: false, message: 'No tienes permisos para eliminar este producto.' };
         }
         catch (error) {
-            return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` } 
+            return { status: false, message: `LO SENTIMOS, HA OCURRIDO UN ERROR ${error}` }
         }
     }
 }

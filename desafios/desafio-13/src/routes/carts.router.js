@@ -7,7 +7,7 @@ const cartManager = new CartManager();
 
 router.post('/carts',jwtAuth,cartManager.createCart);
 
-router.post('/carts/:cid/products/:pid', cartManager.addProductToCart);
+router.post('/carts/:cid/products/:pid',jwtAuth, cartManager.addProductToCart);
 
 router.delete('/carts/:cid/products/:pid', cartManager.deleteProduct);
 
