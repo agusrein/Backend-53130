@@ -40,7 +40,7 @@ class EmailManager {
                          <p>Hola ${first_name},</p>
                          <p>Recuerda que el código es válido por 24hs.</p>
                          <p style="font-size: 18px;">Tu código de restablecimiento: <strong>${token}</strong></p>
-                         <p><a href="http://localhost:8080/password" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Click Aquí para restablecer tu contraseña</a></p>
+                         <p><a href="http://localhost:8080/change-password" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Click Aquí para restablecer tu contraseña</a></p>
                         </div>
 `
             }

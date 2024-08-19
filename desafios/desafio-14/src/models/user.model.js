@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema({
         token:String,
         expire: Date
     }
-
+  
 });
 
 const userModel = mongoose.model("users", userSchema);

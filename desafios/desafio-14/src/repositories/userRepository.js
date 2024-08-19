@@ -11,41 +11,18 @@ class UserRepository {
             if (!user) {
                 return {status:false, message:'Usuario no encontrado'}
             }
-            const token = generateResetToken();
+            const token = generateResetToken(); 
             user.resetToken = {
                 token: token,
-                expire: new Date(Date.now() + 3600000)
+                expire: new Date(Date.now() + 300000)
             }
             await user.save();
             await emailManager.sendEmailPasswordReset(email, user.first_name, token);
-            return {status:true , message: 'El token se ha enviado exitosamente'}
+            return {status:true , message: 'El token se ha enviado exitosamente.'}
         } catch (error) {
             return { status: false, message: 'Error en el servidor' }
         }
     }
-
-
-
-    // async requestPasswordReset(req, res) {
-    //     const { email } = req.body;
-    //     try {
-    //         const user = await userModel.findOne({ email })
-    //         if (!user) {
-    //             return res.status(404).send('Usuario no encontrado')
-    //         }
-    //         const token = generateResetTocken();
-    //         user.resetToken = {
-    //             token: token,
-    //             expire: new Date(Date.now() + 3600000)
-    //         }
-    //         await user.save();
-    //         await emailManager.sendEmailPasswordReset(email, user.first_name, token);
-    //         res.redirect("/")
-    //     } catch (error) {
-    //         res.status(500).send('Error interno del servidor');
-
-    //     }
-    // }
 
     async resetPassword(email,pass,token) {
         try {
@@ -68,40 +45,18 @@ class UserRepository {
             await user.save();
             return {status:true, message: 'Su contraseña ha sido cambiada con éxito'}
         } catch (error) {
-            res.status(500).render(resetPassword, { error: 'Error del servidor' })
+            return { status: false, message: 'Error en el servidor' }
         }
     }
-
-    // async resetPassword(req, res) {
-    //     const { email, pass, token } = req.body;
-    //     try {
-    //         const user = await userModel.findOne({ email });
-    //         if (!user) {
-    //             return res.render('ressetpassword', { error: 'Usuario no encontrado' })
-    //         }
-    //         if (!resetToken || resetToken.token !== token) {
-    //             return res.render('changepassword', { error: 'Codigo inválido' })
-    //         }
-    //         if (Date() < resetToken.expire) {
-    //             return res.render('ressetpassword', { error: 'El token ingresado ha Expirado' })
-    //         }
-    //         if (isValidPassword(pass, user)) {
-    //             return res.render('changepassword', { error: 'La nueva contraseña no puede ser igual a la anterior' })
-    //         }
-    //         user.pass = createHash(pass);
-    //         user.resetToken = undefined;
-    //         await user.save();
-    //         return res.redirect('/login')
-    //     } catch (error) {
-    //         res.status(500).render(resetPassword, { error: 'Error del servidor' })
-    //     }
-    // }
 
     async changePremiumRol(uid) {
         try {
             const user = await userModel.findById(uid);
             if (!user) {
                 return { status: false, message: 'Usuario no encontrado' }
+            }
+            if(user.role == 'admin'){
+                return {status:false, message: 'No puedes cambiar el rol de un administrador.'}
             }
             const newRole = user.role === "user" ? "premium" : "user"
             await userModel.findByIdAndUpdate(uid, { role: newRole })
@@ -113,22 +68,6 @@ class UserRepository {
         }
     }
 
-
-    // async changePremiumRol(req, res) {
-    //     const { uid } = req.params;
-    //     try {
-    //         const user = await userModel.findById(uid);
-    //         if (!user) {
-    //             return res.status(404).send('Usuario no encontrado');
-    //         }
-    //         const newRole = user.role === "user" ? "premium" : "user"
-    //         await userModel.findByIdAndUpdate(uid, { role: newRole })
-    //         return res.status(200).send('Rol Actualizado')
-    //     } catch (error) {
-    //         return res.status(500).send('Error en el servidor')
-
-    //     }
-    // }
 
 }
 

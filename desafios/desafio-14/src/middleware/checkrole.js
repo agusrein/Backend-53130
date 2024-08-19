@@ -1,6 +1,6 @@
-const roleCheck = (role) => {
+const roleCheck = (roles) => {
     return (req, res, next) => {
-        if (req.user && req.user.role === role) {
+        if (req.user && roles.includes(req.user.role)) {
             next();
         } else {
             req.unauthorized = true;

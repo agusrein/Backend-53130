@@ -27,7 +27,8 @@ const initializePassport = () => {
             const newCart = new cartModel();
             newCart.save()
             const role = email === 'admincoder@coder.com' ? 'admin' : 'user'
-            const newUser = { first_name, last_name, email, pass: createHash(pass), age, role ,cart: newCart._id}
+            const resetToken = { token: "", expire: null };
+            const newUser = { first_name, last_name, email, pass: createHash(pass), age, role ,cart: newCart._id, resetToken}
             const result = await userModel.create(newUser)
             return done(null, result)
         } catch (error) {
