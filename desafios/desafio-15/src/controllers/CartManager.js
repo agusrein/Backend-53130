@@ -33,7 +33,7 @@ class CartManager {
         const user = request.user;
         try {
             const updateCart = await cartServices.addProductToCart(user,cid, pid, quantity);
-            updateCart.status ? response.status(200).send({ message: updateCart.message }) : response.status(404).send({ message: updateCart.message })
+            updateCart.status ? response.status(200).send({ message: updateCart.message, cart: updateCart.cart }) : response.status(404).send({ message: updateCart.message })
 
         } catch (error) {
             response.status(500).send(error.message);
@@ -59,7 +59,7 @@ class CartManager {
         const cid = request.params.cid;
         try {
             const emptyCart = await cartServices.emptyCart(cid)
-            emptyCart.status ? response.status(200).send({ message: emptyCart.message }) : response.status(404).send({ message: emptyCart.message });
+            emptyCart.status ? response.status(200).send({ message: emptyCart.message, cart: emptyCart.cart }) : response.status(404).send({ message: emptyCart.message });
         } catch (error) {
             response.status(500).send(error.message);
         }

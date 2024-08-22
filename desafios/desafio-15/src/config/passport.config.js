@@ -25,10 +25,10 @@ const initializePassport = () => {
                 return done(null, false, { message: 'El email ingresado ya se encuentra registrado' })
             }
             const newCart = new cartModel();
-            newCart.save()
+            await newCart.save()
             const role = email === 'admincoder@coder.com' ? 'admin' : 'user'
             const resetToken = { token: "", expire: null };
-            const newUser = { first_name, last_name, email, pass: createHash(pass), age, role ,cart: newCart._id, resetToken}
+            const newUser = { first_name, last_name, email, pass: createHash(pass), age, role, cart: newCart._id, resetToken, documents: [], last_connection: Date.now() }
             const result = await userModel.create(newUser)
             return done(null, result)
         } catch (error) {
@@ -48,6 +48,8 @@ const initializePassport = () => {
             if (!isValidPassword(pass, user)) {
                 return done(null, false, { message: 'La contraseña ingresada es inválida' });
             }
+            user.last_connection = new Date();
+            await user.save();
             return done(null, user);
         } catch (error) {
             return done(error)
@@ -70,11 +72,18 @@ const initializePassport = () => {
         try {
             const user = await userModel.findOne({ email: profile._json.email })
             if (!user) {
-                const newUser = { first_name: profile._json.name, last_name: '', age, email: profile._json.email, pass: '' }
-                const result = userModel.create(newUser);
+                const newCart = new cartModel();
+                await newCart.save()
+                const role = profile._json.email === 'admincoder@coder.com' ? 'admin' : 'user';
+                const resetToken = { token: "", expire: null };
+                const newUser = { first_name: profile._json.name, last_name: '', age:null , role, email: profile._json.email, pass: '', documents: [], last_connection: Date.now(), resetToken, cart: newCart._id }
+                const result = await userModel.create(newUser);
+               
                 return done(null, result)
             }
             else {
+                user.last_connection = new Date();
+                await user.save();
                 return done(null, user)
             }
         } catch (error) {

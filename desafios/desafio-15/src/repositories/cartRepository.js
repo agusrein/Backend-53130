@@ -41,7 +41,7 @@ class CartRepository {
                 existingProduct ? existingProduct.quantity += quantity : cartFound.products.push({ product: productId, quantity });
                 cartFound.markModified("products");
                 await cartFound.save();
-                return { status: true, message: 'Producto Agregado' }
+                return { status: true, message: 'Producto Agregado', cart: cartFound.products}
             }
             else {
                 return { status: false, message: `ERROR Not Found : ${id}` }
@@ -107,7 +107,7 @@ class CartRepository {
                 cartFound.products = []
                 // cartFound.__v = 0;
                 await cartFound.save();
-                return { status: true, message: 'Carrito Eliminado:' };
+                return { status: true, message: 'Carrito Eliminado:', cart : cartFound.products };
             }
             return { status: false, message: `ERROR Not Found : ${id}` }
         } catch (error) {
